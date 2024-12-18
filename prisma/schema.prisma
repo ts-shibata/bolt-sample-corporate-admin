@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model News {
+  id           String      @id @default(cuid())
+  title        String
+  content      String
+  category     NewsCategory
+  status       NewsStatus  @default(DRAFT)
+  publishedAt  DateTime?
+  scheduledAt  DateTime?
+  thumbnailUrl String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("news")
+}
+
+enum NewsCategory {
+  COMPANY
+  PRODUCT
+  EVENT
+  OTHER
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+model Contact {
+  id        String          @id @default(cuid())
+  name      String
+  email     String
+  category  ContactCategory
+  message   String
+  isRead    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@map("contacts")
+}
+
+enum ContactCategory {
+  GENERAL
+  BUSINESS
+  SUPPORT
+  OTHER
+}
