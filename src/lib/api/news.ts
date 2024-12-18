@@ -1,13 +1,11 @@
 import { prisma } from '../prisma/client';
-// import type { News, NewsCategory, NewsStatus } from '@prisma/client';
+import type { News, NewsCategory, NewsStatus } from '@prisma/client';
 
 export type CreateNewsInput = {
   title: string;
   content: string;
-  // category: NewsCategory;
-  // status: NewsStatus;
-  category: string;
-  status: string;
+  category: NewsCategory;
+  status: NewsStatus;
   scheduledAt?: Date | null;
   thumbnailUrl?: string | null;
 };

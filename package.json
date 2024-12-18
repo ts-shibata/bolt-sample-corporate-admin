@@ -37,6 +37,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.2",
     "prisma": "^5.7.0",
     "supabase": "^1.123.4"
   }
