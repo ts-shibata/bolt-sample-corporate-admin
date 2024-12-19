@@ -9,7 +9,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/src/utils/cn';
 
 const navigation = [
@@ -25,6 +25,26 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+    const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(`Logout failed: ${error.error}`);
+        return;
+      }
+
+      router.push('/login');
+    } catch (error) {
+      console.error('Unexpected error during logout:', error);
+      alert('Unexpected error during logout');
+    }
+  };
 
   return (
     <>
@@ -157,7 +177,7 @@ export default function AdminLayout({
               <div className="flex flex-1"></div>
               <div className="flex items-center gap-x-4 lg:gap-x-6">
                 {/* Profile dropdown */}
-                <button className="text-sm font-semibold leading-6 text-gray-900">
+                <button className="text-sm font-semibold leading-6 text-gray-900" onClick={handleLogout}>
                   ログアウト
                 </button>
               </div>

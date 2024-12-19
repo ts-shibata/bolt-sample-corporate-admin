@@ -12,13 +12,11 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
-      console.log(email, password);
       await signIn(email, password);
     } catch (err) {
-      setError(
-        'ログインに失敗しました。メールアドレスとパスワードを確認してください。'
-      );
+      setError('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
     }
   };
 

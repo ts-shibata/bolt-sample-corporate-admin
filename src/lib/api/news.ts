@@ -1,4 +1,4 @@
-import { prisma } from '../prisma/client';
+import { createServerSupabaseClient } from '../supabase/server';
 import type { News, NewsCategory, NewsStatus } from '@prisma/client';
 
 export type CreateNewsInput = {
@@ -13,63 +13,71 @@ export type CreateNewsInput = {
 export type UpdateNewsInput = Partial<CreateNewsInput>;
 
 export const newsService = {
-  // Get paginated news list
   async getNewsList(page: number = 1, limit: number = 10) {
-    const skip = (page - 1) * limit;
-    const [total, items] = await Promise.all([
-      prisma.news.count(),
-      prisma.news.findMany({
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-      }),
+    const supabase = createServerSupabaseClient();
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    const [{ count }, { data: items }] = await Promise.all([
+      supabase.from('news').select('*', { count: 'exact', head: true }),
+      supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(start, end),
     ]);
 
     return {
-      items,
-      total,
+      items: items || [],
+      total: count || 0,
       page,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil((count || 0) / limit),
     };
   },
 
-  // Get single news by ID
   async getNewsById(id: string) {
-    return prisma.news.findUnique({
-      where: { id },
-    });
+    const supabase = createServerSupabaseClient();
+    const { data } = await supabase.from('news').select('*').eq('id', id).single();
+    return data;
   },
 
-  // Create news
   async createNews(data: CreateNewsInput) {
-    return prisma.news.create({
-      data: {
+    const supabase = createServerSupabaseClient();
+    const { data: news, error } = await supabase.from('news').insert([
+      {
         ...data,
-        publishedAt: data.status === 'PUBLISHED' ? new Date() : null,
+        published_at: data.status === 'PUBLISHED' ? new Date().toISOString() : null,
       },
-    });
+    ]).select().single();
+
+    if (error) throw error;
+    return news;
   },
 
-  // Update news
   async updateNews(id: string, data: UpdateNewsInput) {
-    return prisma.news.update({
-      where: { id },
-      data: {
+    const supabase = createServerSupabaseClient();
+    const { data: news, error } = await supabase
+      .from('news')
+      .update({
         ...data,
-        publishedAt:
+        published_at:
           data.status === 'PUBLISHED'
-            ? new Date()
+            ? new Date().toISOString()
             : data.status === 'DRAFT'
             ? null
             : undefined,
-      },
-    });
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return news;
   },
 
-  // Delete news
   async deleteNews(id: string) {
-    return prisma.news.delete({
-      where: { id },
-    });
+    const supabase = createServerSupabaseClient();
+    const { error } = await supabase.from('news').delete().eq('id', id);
+    if (error) throw error;
   },
 };

@@ -5,20 +5,23 @@ import type { NextRequest } from 'next/server';
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
+  const { pathname } = req.nextUrl;
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // If there's no session and the user is trying to access a protected route
-  if (!session && !req.nextUrl.pathname.startsWith('/login')) {
+  // Public routes that don't require authentication
+  const publicRoutes = ['/login'];
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+  if (!session && !isPublicRoute) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = '/login';
     return NextResponse.redirect(redirectUrl);
   }
 
-  // If there's a session and the user is trying to access the login page
-  if (session && req.nextUrl.pathname.startsWith('/login')) {
+  if (session && isPublicRoute) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);
@@ -28,5 +31,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|api).*)',
+  ],
 };
