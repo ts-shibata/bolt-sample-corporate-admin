@@ -1,35 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/src/components/ui/Button';
 import { NewsTable } from '@/src/components/news/NewsTable';
 import { Pagination } from '@/src/components/ui/Pagination';
 import { PlusIcon } from '@heroicons/react/24/outline';
-
-// Dummy data for demonstration
-const dummyNews = Array.from({ length: 25 }, (_, i) => ({
-  id: `${i + 1}`,
-  title: `お知らせタイトル ${i + 1}`,
-  content: 'お知らせ本文...',
-  category: ['company', 'product', 'event', 'other'][i % 4] as any,
-  status: ['draft', 'published', 'scheduled'][i % 3] as any,
-  publishedAt: i % 3 === 1 ? new Date() : null,
-  scheduledAt: i % 3 === 2 ? new Date() : null,
-  thumbnailUrl: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-}));
+import { useNews } from '@/src/hooks/useNews';
 
 export default function NewsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const totalPages = Math.ceil(dummyNews.length / itemsPerPage);
+  const { news, loading, error, page, totalPages, setPage, fetchNews } = useNews();
 
-  const currentNews = dummyNews.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  useEffect(() => {
+    fetchNews();
+  }, [page, fetchNews]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -44,11 +36,11 @@ export default function NewsPage() {
       </div>
 
       <div className="mt-8">
-        <NewsTable news={currentNews} />
+        <NewsTable news={news} />
         <Pagination
-          currentPage={currentPage}
+          currentPage={page}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={setPage}
         />
       </div>
     </div>

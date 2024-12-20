@@ -46,7 +46,7 @@ export function ContactTable({ contacts }: ContactTableProps) {
                 {contact.category}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {format(contact.createdAt, 'yyyy/MM/dd HH:mm')}
+                {format(new Date(contact.createdAt), 'yyyy/MM/dd HH:mm')}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 <span

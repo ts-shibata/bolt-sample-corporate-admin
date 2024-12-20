@@ -14,7 +14,11 @@ export const authServer = {
       throw new Error('Invalid login credentials');
     }
 
-    return data.user;
+    return {
+      user: data.user,
+      accessToken: data.session?.access_token,
+      refreshToken: data.session?.refresh_token,
+    };
   },
 
   async createUser(email: string, password: string, name?: string) {

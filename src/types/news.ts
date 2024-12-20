@@ -1,6 +1,6 @@
-export type NewsCategory = 'company' | 'product' | 'event' | 'other';
+export type NewsCategory = 'COMPANY' | 'PRODUCT' | 'EVENT' | 'OTHER';
 
-export type NewsStatus = 'draft' | 'published' | 'scheduled';
+export type NewsStatus = 'DRAFT' | 'PUBLISHED' | 'SCHEDULED';
 
 export interface News {
   id: string;

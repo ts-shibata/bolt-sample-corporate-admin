@@ -45,7 +45,7 @@ export function NewsTable({ news }: NewsTableProps) {
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 {item.publishedAt
-                  ? format(item.publishedAt, 'yyyy/MM/dd')
+                  ? format(new Date(item.publishedAt), 'yyyy/MM/dd')
                   : '-'}
               </td>
               <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">

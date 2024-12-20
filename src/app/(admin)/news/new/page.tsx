@@ -1,11 +1,21 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { NewsForm } from '@/src/components/news/NewsForm';
+import { useNews } from '@/src/hooks/useNews';
 
 export default function NewNewsPage() {
+  const router = useRouter();
+  const { createNews } = useNews();
+
   const handleSubmit = async (data: any) => {
-    console.log('Form submitted:', data);
-    // TODO: Implement actual form submission
+    try {
+      await createNews(data);
+      router.push('/news');
+    } catch (error) {
+      console.error('Failed to create news:', error);
+      // TODO: Show error message to user
+    }
   };
 
   return (

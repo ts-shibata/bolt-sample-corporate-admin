@@ -29,10 +29,10 @@ model News {
   publishedAt  DateTime?
   scheduledAt  DateTime?
   thumbnailUrl String?
-  authorId     String
+  authorId     String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-  author       User         @relation(fields: [authorId], references: [id])
+  author       User?         @relation(fields: [authorId], references: [id])
 
   @@map("news")
 }

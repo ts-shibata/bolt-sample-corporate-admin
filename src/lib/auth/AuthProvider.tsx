@@ -81,7 +81,8 @@ function useAuth(router: ReturnType<typeof useRouter>) {
         throw new Error('Authentication failed');
       }
 
-      const { user: authUser } = await response.json();
+      const { user: authUser, accessToken, refreshToken } = await response.json();
+      await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
       setUser(authUser);
       router.push('/dashboard');
     } catch (error) {
